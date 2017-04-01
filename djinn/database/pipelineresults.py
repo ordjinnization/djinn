@@ -54,7 +54,7 @@ class PipelineResults(object):
                 self.session.add(PipelineRun(**result))
         self.session.commit()
 
-    def get_all(self):
+    def get_all_results(self):
         """
         Get all results.
         :return: list of PipelineRun rows
@@ -83,3 +83,11 @@ class PipelineResults(object):
         :return: list of PipelineRun rows
         """
         return self._get_filtered_results(repository=reponame, success=False)
+
+    def get_failed_results_for_stage(self, stage):
+        """
+        Get all results for pipelines that failed at a given stage.
+        :param stage: stage name as string
+        :return: list of PipelineRun rows
+        """
+        return self._get_filtered_results(stage_failed=stage)

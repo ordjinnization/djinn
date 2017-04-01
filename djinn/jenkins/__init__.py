@@ -1,34 +1,41 @@
+import re
+
 import requests
+
+from ..djinnutils.loggers import get_named_logger
 
 
 class DJenkins(object):
-    def __init__(self, baseurl=None, creds=None):
+    def __init__(self, url=None, logger=None):
         """
-        Wrapper for retrieving data from our Jenkins instance.
-        :param baseurl: Location of Jenkins instance, e.g. "http://jenkins"
-        :param creds: Basic Auth string containing username and API token, e.g. "myself:apitoken"
+        Client for fetching workflow data from Jenkins' API, and the workflow-api.
+        :param url: full URL to connect to Jenkins, including basic auth e.g. "http://admin:apitoken@localhost"
         """
-        if not creds and baseurl:
-            raise ValueError('Please provide credentials and a URL for Jenkins.')
-        self.jurl = self._build_auth_url(creds=creds, url=baseurl)
-
-    @staticmethod
-    def _build_auth_url(creds, url):
-        """
-        Add basic auth to Jenkins' URL.
-        :param creds: basic auth string, e.g. "user:apitoken"
-        :param url: Jenkins URL
-        :return: formatted URL
-        """
-        if 'http://' in url:
-            return url.replace('http://', 'http://{}@'.format(creds))
-        elif 'https://' in url:
-            return url.replace('https://', 'https://{}@'.format(creds))
+        if not logger:
+            self.logger = get_named_logger('DJenkins')
+        if url:
+            self.check_for_valid_url(url)
+            self.logger.info('URL check: appears to be valid.')
         else:
-            raise ValueError('URL must start with http:// or https:// .')
+            self.logger.debug('DJenkins called without a URL!')
+        self.jurl = url
 
     @staticmethod
-    def _get_json_response(url):
+    def check_for_valid_url(url):
+        """
+        Verify URL provided contains basic auth. Raises ValueError if regex doesn't match.
+        :param url: jenkins url containing protocol, auth and address, e.g. http://admin:apitoken@localhost
+        :raises: ValueError
+        :return: True on success
+        """
+        pattern = r'(https?://)\w.*:\w.*@'
+        if not re.match(pattern, url):
+            msg = 'Provided URL does not appear to be correct. '
+            msg += 'Expected form: http(s)://username:password@url, e.g. http://admin:apitoken@localhost'
+            raise ValueError(msg)
+        return True
+
+    def _get_json_response(self, url):
         """
         Retrieve JSON response from a given URL. Ignore 404 errors as the repo may not have any history, if
         the response returned something other than JSON(e.g. Jenkins 500 ISE error page) swallow it and move on.
@@ -38,11 +45,11 @@ class DJenkins(object):
         resp = requests.get(url)
         try:
             if resp.status_code == 404:
-                print('History not found for {}, skipping.'.format(url))
+                self.logger.info('History not found for {}, skipping.'.format(url))
                 return dict()
             return resp.json()
         except ValueError as err:
-            print('Error retrieving JSON from {}: {}'.format(url, repr(err)))
+            self.logger.exception('Error retrieving JSON from {}: {}'.format(url, repr(err)))
 
     @staticmethod
     def _parse_single_pipeline_result(project, repo, pipeline):
@@ -90,6 +97,7 @@ class DJenkins(object):
         :param foldername: string
         :return: list of valid repos as strings
         """
+        self.logger.info('Retrieving repos in folder {}'.format(foldername))
         results = list()
         apiurl = '{}/job/{}/api/json'.format(self.jurl, foldername)
         jobs = self._get_json_response(apiurl).get('jobs')
@@ -107,6 +115,7 @@ class DJenkins(object):
         :param pipelinebranch: branch to fetch history from.
         :return: list of dicts containing pipeline run information
         """
+        self.logger.info('Retrieving history for {}, branch {}'.format(reponame, pipelinebranch))
         results = list()
         apiurl = '{}/job/{}/job/{}/job/{}/wfapi/runs'.format(self.jurl, projectname, reponame, pipelinebranch)
         pipelines = self._get_json_response(apiurl)
