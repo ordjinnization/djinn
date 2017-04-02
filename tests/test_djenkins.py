@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 
 from betamax import Betamax
@@ -7,13 +8,16 @@ from djinn import DJenkins
 
 
 class TestDjenkins(TestCase):
+    basefolder = os.path.dirname(os.path.realpath(__file__))
+
     @classmethod
     def setUpClass(cls):
         cls.jenkins = DJenkins(url='http://admin:103b194e4c57eeda91333e6e51c4f40e@localhost:8080')
         betamaxopts = {'serialize_with': 'prettyjson',
                        'record_mode': 'once',
                        'match_requests_on': ['uri', 'method', 'body', 'headers']}
-        cls.recorder = Betamax(session=cls.jenkins.session, cassette_library_dir='cassettes',
+        cassettedir = os.path.join(cls.basefolder, 'cassettes')
+        cls.recorder = Betamax(session=cls.jenkins.session, cassette_library_dir=cassettedir,
                                default_cassette_options=betamaxopts)
         cls.recorder.register_serializer(pretty_json.PrettyJSONSerializer)
 
