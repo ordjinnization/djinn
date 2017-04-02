@@ -11,6 +11,8 @@ class PipelineResults(object):
         :param connection_url: connection url for target database
         :param echo: echo all commands to logs
         """
+        if not connection_url:
+            raise ValueError('No database connection URL provided.')
         engine = create_engine(connection_url, echo=echo)
         PipelineRun.metadata.create_all(engine)
         self.session = sessionmaker(bind=engine)()
@@ -22,7 +24,7 @@ class PipelineResults(object):
         :param pk: primary key to search
         :return: status as boolean
         """
-        exists = self.pipelinequery.filter_by(id=pk).all()
+        exists = self.pipelinequery.filter_by(id=pk).first()
         if exists:
             return True
         return False
@@ -53,6 +55,14 @@ class PipelineResults(object):
             if not self._check_row_exists(pk=result.get('id')):
                 self.session.add(PipelineRun(**result))
         self.session.commit()
+
+    def get_result_by_primary_key(self, pk):
+        """
+        Retrieve a single result using the primary key(repository name + run id)
+        :param pk: primary key to retrieve
+        :return: PipelineRun or None
+        """
+        return self.pipelinequery.filter_by(id=pk).first()
 
     def get_all_results(self):
         """
@@ -91,3 +101,11 @@ class PipelineResults(object):
         :return: list of PipelineRun rows
         """
         return self._get_filtered_results(stage_failed=stage)
+
+    def get_failed_results_by_error_type(self, error):
+        """
+        Get all results for pipelines that failed with a given error.
+        :param error: Jenkins error type as string
+        :return: list of PipelineRun rows
+        """
+        return self._get_filtered_results(error_type=error)

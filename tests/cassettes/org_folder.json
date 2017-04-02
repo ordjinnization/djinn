@@ -1,0 +1,70 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2017-04-02T14:31:59",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic YWRtaW46MTAzYjE5NGU0YzU3ZWVkYTkxMzMzZTZlNTFjNGY0MGU="
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "User-Agent": [
+            "python-requests/2.13.0"
+          ]
+        },
+        "method": "GET",
+        "uri": "http://admin:103b194e4c57eeda91333e6e51c4f40e@localhost:8080/api/json"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAA/6VSS0/DMAz+K1POpQVOU28TDyE0HmIDDgihtPXabG5c8lgZ0/47TrvBBEIcONr5Xo69Fi85SmtFKipfWNJxTQVgfNEVIhL8pkoNxVhmgAx7Wm+eIxFATLm+ubsajRmluT4FmxvVOMW8VLgKBrW0DszgEvRCaTsIoC32WtaBHypfn71B7h0ZVj+ORLEvoz1iJOaUdc5fWee9ZJwZqfMqvjGl1OpdBtI5YQEmKPce07PJlCtvMMzoXJMmCVIusSLr0uHh8DBh/STAErGJ9kzIlPHWKFdxg74Mli2ZxQypjZkVP26LS8q+HNtKOlh2Gf5y3UETxuaEZBidoQcRPpn4QSKOSRYiXW8i0RhVS7N6UNBy45fNjRA7wGcclvgjCY8tXr0Cp3R5Si3/+0yihUhYlEsYlaDdLRkn0oMjFtIYToEvos/1cyl9jvt93MTxbqxTuQ1e3sKJ8XVYqjMeusaEb8Aot9q1ljzDt6X/f8znzQefEIlw8AIAAA==",
+          "encoding": "UTF-8"
+        },
+        "headers": {
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "385"
+          ],
+          "Content-Type": [
+            "application/json;charset=UTF-8"
+          ],
+          "Date": [
+            "Sun, 02 Apr 2017 14:31:59 GMT"
+          ],
+          "Server": [
+            "Jetty(9.2.z-SNAPSHOT)"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ],
+          "X-Jenkins": [
+            "2.46.1"
+          ],
+          "X-Jenkins-Session": [
+            "fd3ae7e3"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "http://admin:103b194e4c57eeda91333e6e51c4f40e@localhost:8080/api/json"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}

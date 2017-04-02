@@ -7,7 +7,7 @@ Base = declarative_base()
 class PipelineRun(Base):
     __tablename__ = 'pipeline_runs'
     id = Column(String, primary_key=True)
-    run_id = Column(Integer)
+    run_id = Column(String)
     project = Column(String)
     repository = Column(String)
     status = Column(String)

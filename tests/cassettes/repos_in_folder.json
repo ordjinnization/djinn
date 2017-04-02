@@ -1,0 +1,70 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2017-04-02T14:31:59",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic YWRtaW46MTAzYjE5NGU0YzU3ZWVkYTkxMzMzZTZlNTFjNGY0MGU="
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "User-Agent": [
+            "python-requests/2.13.0"
+          ]
+        },
+        "method": "GET",
+        "uri": "http://admin:103b194e4c57eeda91333e6e51c4f40e@localhost:8080/job/TEST/api/json"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAA/71TTW/UMBD9K5bFcddZEJVKbrR8FKR2ERR6QNXKcSaJt44nssesltX+Mm78MuxsSrpbKsoFKYo8M++9TGaeN3yhjPSe53wJ9kZbLwonrWrE3NXS6u+SNNo3aEpwfMKlSmFEf91sJ5v7XK9aITstWiBZSpJiXixB0fkQvuzpfI+KrhYDXWnRmVAnoVpTE4rFrpeFx+AUiLeazkIRG7uvt3tGVYWtUAZDWQD436rKQQmWtDRefNGwOh3jW6nrCS/BK6e7Ps5tMCamtO+MXF/IFqL4ewR2Esj0I7lTmruLiL7lVPH96mFeKg/5y9efLmPG7kXBRSXeEHV5lhlU0jToKT+eHc+yJRZZgmUR14A01HyEDh2lvey3z6/QeWI7UM7GDtjPH2wYe6UNTAmiOPsXdMq10hO4PKK0KZknWWijaZ2zpwwDMawYNcDiTog9Y0UCeVbJqFCK2LpWaE/TwoY5pHi6+/j0+Yzw6MUA+rybxd2K6Gwdq16hi9SjWVpcHEtvzb+Za4XupjK4Em0wpAe/Xw3J85Q76XMfHCb3jqs5HMFj15QOh9ys91rndCvdOpmR53+4UA9exsQ4609P0vFd25mxzxIqGX/j0S7aTvi3KHIwvP/cw/X2F36fZbmNBAAA",
+          "encoding": "UTF-8"
+        },
+        "headers": {
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "489"
+          ],
+          "Content-Type": [
+            "application/json;charset=UTF-8"
+          ],
+          "Date": [
+            "Sun, 02 Apr 2017 14:31:59 GMT"
+          ],
+          "Server": [
+            "Jetty(9.2.z-SNAPSHOT)"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ],
+          "X-Jenkins": [
+            "2.46.1"
+          ],
+          "X-Jenkins-Session": [
+            "fd3ae7e3"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "http://admin:103b194e4c57eeda91333e6e51c4f40e@localhost:8080/job/TEST/api/json"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}

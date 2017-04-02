@@ -12,13 +12,15 @@ class DJenkins(object):
         :param url: full URL to connect to Jenkins, including basic auth e.g. "http://admin:apitoken@localhost"
         """
         if not logger:
-            self.logger = get_named_logger('DJenkins')
+            logger = get_named_logger('DJenkins')
+        self.logger = logger
         if url:
             self.check_for_valid_url(url)
             self.logger.info('URL check: appears to be valid.')
         else:
             self.logger.debug('DJenkins called without a URL!')
         self.jurl = url
+        self.session = requests.Session()
 
     @staticmethod
     def check_for_valid_url(url):
@@ -43,7 +45,7 @@ class DJenkins(object):
         :return: response as dict
         """
         try:
-            resp = requests.get(url)
+            resp = self.session.get(url)
             if resp.status_code == 404:
                 self.logger.info('History not found for {}, skipping.'.format(url))
                 return dict()

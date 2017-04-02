@@ -1,0 +1,61 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2017-04-02T14:31:59",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Authorization": [
+            "Basic YWRtaW46MTAzYjE5NGU0YzU3ZWVkYTkxMzMzZTZlNTFjNGY0MGU="
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "User-Agent": [
+            "python-requests/2.13.0"
+          ]
+        },
+        "method": "GET",
+        "uri": "http://admin:103b194e4c57eeda91333e6e51c4f40e@localhost:8080/job/TEST/job/jenkinsfile-test/job/master/wfapi/runs"
+      },
+      "response": {
+        "body": {
+          "encoding": "UTF-8",
+          "string": "[{\"_links\":{\"self\":{\"href\":\"/job/TEST/job/jenkinsfile-test/job/master/7/wfapi/describe\"},\"changesets\":{\"href\":\"/job/TEST/job/jenkinsfile-test/job/master/7/wfapi/changesets\"}},\"id\":\"7\",\"name\":\"#7\",\"status\":\"SUCCESS\",\"startTimeMillis\":1491143071036,\"endTimeMillis\":0,\"durationMillis\":0,\"queueDurationMillis\":2480,\"pauseDurationMillis\":0,\"stages\":[{\"_links\":{\"self\":{\"href\":\"/job/TEST/job/jenkinsfile-test/job/master/7/execution/node/5/wfapi/describe\"}},\"id\":\"5\",\"name\":\"Checkout\",\"execNode\":\"\",\"status\":\"SUCCESS\",\"startTimeMillis\":1491143073516,\"durationMillis\":6575,\"pauseDurationMillis\":0},{\"_links\":{\"self\":{\"href\":\"/job/TEST/job/jenkinsfile-test/job/master/7/execution/node/7/wfapi/describe\"}},\"id\":\"7\",\"name\":\"Setup\",\"execNode\":\"\",\"status\":\"SUCCESS\",\"startTimeMillis\":1491143080091,\"durationMillis\":355,\"pauseDurationMillis\":0},{\"_links\":{\"self\":{\"href\":\"/job/TEST/job/jenkinsfile-test/job/master/7/execution/node/9/wfapi/describe\"}},\"id\":\"9\",\"name\":\"Publish\",\"execNode\":\"\",\"status\":\"SUCCESS\",\"startTimeMillis\":1491143080446,\"durationMillis\":649,\"pauseDurationMillis\":0}]},{\"_links\":{\"self\":{\"href\":\"/job/TEST/job/jenkinsfile-test/job/master/6/wfapi/describe\"}},\"id\":\"6\",\"name\":\"#6\",\"status\":\"FAILED\",\"startTimeMillis\":1491143013685,\"endTimeMillis\":0,\"durationMillis\":0,\"queueDurationMillis\":2851,\"pauseDurationMillis\":0,\"stages\":[{\"_links\":{\"self\":{\"href\":\"/job/TEST/job/jenkinsfile-test/job/master/6/execution/node/5/wfapi/describe\"}},\"id\":\"5\",\"name\":\"Checkout\",\"execNode\":\"\",\"status\":\"SUCCESS\",\"startTimeMillis\":1491143016536,\"durationMillis\":6127,\"pauseDurationMillis\":0},{\"_links\":{\"self\":{\"href\":\"/job/TEST/job/jenkinsfile-test/job/master/6/execution/node/7/wfapi/describe\"}},\"id\":\"7\",\"name\":\"Setup\",\"execNode\":\"\",\"status\":\"FAILED\",\"error\":{\"message\":\"Oops.\",\"type\":\"hudson.AbortException\"},\"startTimeMillis\":1491143022663,\"durationMillis\":873,\"pauseDurationMillis\":0}]}]"
+        },
+        "headers": {
+          "Content-Length": [
+            "1880"
+          ],
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ],
+          "Date": [
+            "Sun, 02 Apr 2017 14:31:59 GMT"
+          ],
+          "Server": [
+            "Jetty(9.2.z-SNAPSHOT)"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "http://admin:103b194e4c57eeda91333e6e51c4f40e@localhost:8080/job/TEST/job/jenkinsfile-test/job/master/wfapi/runs"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}

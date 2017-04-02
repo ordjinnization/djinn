@@ -1,5 +1,6 @@
 from database import PipelineResults
 from jenkins import DJenkins
+from djinnutils.loggers import get_named_logger
 
 
 class Djinn(object):
@@ -9,7 +10,8 @@ class Djinn(object):
         :param jenkinsurl: URL containing basic auth used for queries, e.g. http://admin:apitoken@localhost
         :param dburl: database connection string, e.g. sqlite:///jenkinsdata.db
         """
-        self.dj = DJenkins(url=jenkinsurl)
+        self.logger = get_named_logger('Djinn')
+        self.dj = DJenkins(url=jenkinsurl, logger=self.logger)
         self.db = PipelineResults(connection_url=dburl, echo=False)
 
     def get_all_pipeline_results_and_save_to_db(self, pipelinebranch):
