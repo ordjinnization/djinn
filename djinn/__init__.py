@@ -4,9 +4,19 @@ from jenkins import DJenkins
 
 class Djinn(object):
     def __init__(self, jenkinsurl=None, dburl=None):
-        self.dj = DJenkins(baseurl=jenkinsurl)
+        """
+        Initialize connections to Jenkins and a persistence layer.
+        :param jenkinsurl: URL containing basic auth used for queries, e.g. http://admin:apitoken@localhost
+        :param dburl: database connection string, e.g. sqlite:///jenkinsdata.db
+        """
+        self.dj = DJenkins(url=jenkinsurl)
         self.db = PipelineResults(connection_url=dburl, echo=False)
 
     def get_all_pipeline_results_and_save_to_db(self, pipelinebranch):
+        """
+        Fetch all repository pipeline data and write to database.
+        :param pipelinebranch: branch name used for pipelines.
+        :return: None
+        """
         pipelines = self.dj.get_pipeline_history_for_all_repos(pipelinebranch=pipelinebranch)
         self.db.insert_result_batch(pipelines)

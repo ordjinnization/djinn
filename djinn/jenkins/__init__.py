@@ -28,10 +28,10 @@ class DJenkins(object):
         :raises: ValueError
         :return: True on success
         """
-        pattern = r'(https?://)\w.*:\w.*@'
+        pattern = r'(https?://)\w.*:\w.*@\w+'
         if not re.match(pattern, url):
-            msg = 'Provided URL does not appear to be correct. '
-            msg += 'Expected form: http(s)://username:password@url, e.g. http://admin:apitoken@localhost'
+            msg = 'Provided URL does not appear to be correct: {}\n\t'.format(url)
+            msg += 'Expected format: http(s)://username:password@url, e.g. http://admin:apitoken@localhost'
             raise ValueError(msg)
         return True
 
@@ -42,8 +42,8 @@ class DJenkins(object):
         :param url: URL as string
         :return: response as dict
         """
-        resp = requests.get(url)
         try:
+            resp = requests.get(url)
             if resp.status_code == 404:
                 self.logger.info('History not found for {}, skipping.'.format(url))
                 return dict()

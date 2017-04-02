@@ -3,6 +3,11 @@ import sys
 
 
 def get_named_logger(name):
+    """
+    Create a logger, if no handlers already exist attach to stdout
+    :param name: desired name of logger as string
+    :return: Logger instance
+    """
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
     if not len(logger.handlers):
