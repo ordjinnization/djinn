@@ -1,6 +1,6 @@
-from database import PipelineResults
-from jenkins import DJenkins
-from djinnutils.loggers import get_named_logger
+from .database import PipelineResults
+from .jenkins import DJenkins
+from .djinnutils.loggers import get_named_logger
 
 
 class Djinn(object):

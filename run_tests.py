@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+import logging
 import unittest
+
+logging.disable(logging.CRITICAL)
 
 
 def main():

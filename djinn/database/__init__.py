@@ -1,1 +1,1 @@
-from pipelineresults import PipelineResults
+from .pipelineresults import PipelineResults
