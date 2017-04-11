@@ -8,7 +8,9 @@ logging.disable(logging.CRITICAL)
 
 def main():
     suite = unittest.TestLoader().discover('tests')
-    unittest.TextTestRunner().run(suite)
+    run = unittest.TextTestRunner().run(suite)
+    if not run.wasSuccessful():
+        exit(1)
 
 
 if __name__ == '__main__':
