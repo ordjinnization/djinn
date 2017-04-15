@@ -26,7 +26,7 @@ class DJenkins(object):
     def check_for_valid_url(url):
         """
         Verify URL provided contains basic auth. Raises ValueError if regex doesn't match.
-        :param url: jenkins url containing protocol, auth and address, e.g. http://admin:apitoken@localhost
+        :param url: Jenkins url containing protocol, auth and address, e.g. http://admin:apitoken@localhost
         :raises: ValueError
         :return: True on success
         """
@@ -47,7 +47,7 @@ class DJenkins(object):
         try:
             resp = self.session.get(url)
             if resp.status_code == 404:
-                self.logger.info('History not found for {}, skipping.'.format(url))
+                # Some repos don't have any history, ignore and move on with our lives.
                 return dict()
             return resp.json()
         except ValueError as err:
@@ -117,7 +117,7 @@ class DJenkins(object):
         :param pipelinebranch: branch to fetch history from.
         :return: list of dicts containing pipeline run information
         """
-        self.logger.info('Retrieving history for {}, branch {}'.format(reponame, pipelinebranch))
+        self.logger.debug('Retrieving history for {}, branch {}'.format(reponame, pipelinebranch))
         results = list()
         apiurl = '{}/job/{}/job/{}/job/{}/wfapi/runs'.format(self.jurl, projectname, reponame, pipelinebranch)
         pipelines = self._get_json_response(apiurl)

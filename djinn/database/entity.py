@@ -6,16 +6,16 @@ Base = declarative_base()
 
 class PipelineRun(Base):
     __tablename__ = 'pipeline_runs'
-    id = Column(String, primary_key=True)
-    run_id = Column(String)
-    project = Column(String)
-    repository = Column(String)
-    status = Column(String)
-    timestamp = Column(Integer)
+    id = Column(String(length=255), primary_key=True)
+    run_id = Column(String(length=255))
+    project = Column(String(length=255))
+    repository = Column(String(length=255))
+    status = Column(String(length=255))
+    timestamp = Column(String(length=255))
     success = Column(Boolean)
-    stage_failed = Column(String)
-    error_type = Column(String)
-    error_message = Column(String)
+    stage_failed = Column(String(length=255))
+    error_type = Column(String(length=255))
+    error_message = Column(String(length=4096))
 
     def __repr__(self):
         reprstr = ("<PipelineRun(id={id}, run_id={run_id}, project={project}, repository={repository}, "

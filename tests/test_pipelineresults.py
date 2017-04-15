@@ -5,9 +5,9 @@ from djinn import PipelineResults
 
 class TestPipelineResults(TestCase):
     successfulresult = {'status': u'SUCCESS', 'success': True, 'repository': 'jenkinsfile-test', 'run_id': u'7',
-                        'timestamp': 1491143071036L, 'project': 'TEST', 'id': 'jenkinsfile-test7'}
+                        'timestamp': '1491143071036', 'project': 'TEST', 'id': 'jenkinsfile-test7'}
     failedresult = {'status': u'FAILED', 'error_type': u'hudson.AbortException', 'success': False,
-                    'repository': 'jenkinsfile-test', 'run_id': u'6', 'timestamp': 1491143013685L,
+                    'repository': 'jenkinsfile-test', 'run_id': u'6', 'timestamp': '1491143013685',
                     'error_message': u'Oops.', 'stage_failed': u'Setup', 'project': 'TEST', 'id': 'jenkinsfile-test6'}
 
     def setUp(self):

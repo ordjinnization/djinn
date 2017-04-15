@@ -7,7 +7,7 @@ from .entity import PipelineRun
 class PipelineResults(object):
     def __init__(self, connection_url, echo=False):
         """
-        Initialize the database if required, and create a session.
+        Initialize the database if required, and create a sessionmaker bound to our conn URL.
         :param connection_url: connection url for target database
         :param echo: echo all commands to logs
         """
@@ -15,8 +15,7 @@ class PipelineResults(object):
             raise ValueError('No database connection URL provided.')
         engine = create_engine(connection_url, echo=echo)
         PipelineRun.metadata.create_all(engine)
-        self.session = sessionmaker(bind=engine)()
-        self.pipelinequery = self.session.query(PipelineRun)
+        self.session_factory = sessionmaker(bind=engine)
 
     def _check_row_exists(self, pk):
         """
@@ -24,7 +23,9 @@ class PipelineResults(object):
         :param pk: primary key to search
         :return: status as boolean
         """
-        exists = self.pipelinequery.filter_by(id=pk).first()
+        session = self.session_factory()
+        exists = session.query(PipelineRun).filter_by(id=pk).first()
+        session.close()
         if exists:
             return True
         return False
@@ -35,26 +36,33 @@ class PipelineResults(object):
         :param kwargs: key and value to filter by, e.g. _get_filtered_results(id=1, success=True)
         :return: list of results
         """
-        return self.pipelinequery.filter_by(**kwargs).all()
+        session = self.session_factory()
+        results = list(session.query(PipelineRun).filter_by(**kwargs).all())
+        session.close()
+        return results
 
     def insert_single_result(self, result):
         """
         Add new unique result to database
-        :param result: result from djinn.jenkins.DJenkins as dict
+        :param result: result from djinn.djenkins.DJenkins as dict
         """
+        session = self.session_factory()
         if not self._check_row_exists(pk=result.get('id')):
-            self.session.add(PipelineRun(**result))
-        self.session.commit()
+            session.add(PipelineRun(**result))
+        session.commit()
+        session.close()
 
     def insert_result_batch(self, results):
         """
         Add a list of results to database
-        :param results: list of results from djinn.jenkins.DJenkins
+        :param results: list of results from djinn.djenkins.DJenkins
         """
+        session = self.session_factory()
         for result in results:
             if not self._check_row_exists(pk=result.get('id')):
-                self.session.add(PipelineRun(**result))
-        self.session.commit()
+                session.add(PipelineRun(**result))
+        session.commit()
+        session.close()
 
     def get_result_by_primary_key(self, pk):
         """
@@ -62,14 +70,20 @@ class PipelineResults(object):
         :param pk: primary key to retrieve
         :return: PipelineRun or None
         """
-        return self.pipelinequery.filter_by(id=pk).first()
+        session = self.session_factory()
+        result = session.query(PipelineRun).filter_by(id=pk).first()
+        session.close()
+        return result
 
     def get_all_results(self):
         """
         Get all results.
         :return: list of PipelineRun rows
         """
-        return self.pipelinequery.all()
+        session = self.session_factory()
+        results = list(session.query(PipelineRun).all())
+        session.close()
+        return results
 
     def get_all_failures(self):
         """
@@ -77,6 +91,14 @@ class PipelineResults(object):
         :return: list of PipelineRun rows.
         """
         return self._get_filtered_results(success=False)
+
+    def get_results_for_project(self, project):
+        """
+        Get all results for a given project.
+        :param project: project name as string
+        :return: list of PipelineRun rows
+        """
+        return self._get_filtered_results(project=project)
 
     def get_results_for_repo(self, reponame):
         """

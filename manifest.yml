@@ -1,0 +1,11 @@
+---
+applications:
+- name: djinn
+  memory: 128MB
+  disk_quota: 256MB
+  buildpack: python_buildpack
+  services:
+  - djinn-mysql
+env:
+  JENKINS_URL: https://replace:me@jenkinsurl
+  
