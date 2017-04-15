@@ -45,7 +45,20 @@ class TestDjinn(testing.TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 3)
 
-    def test_results_for_project(self):
+    def test_results_for_project_that_exists(self):
         result = self.simulate_get('/results/TEST')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 3)
+
+    def test_results_for_project_that_does_not_exist(self):
+        result = self.simulate_get('/results/FAKENEWS')
+        self.assertEqual(result.status_code, 404)
+
+    def test_results_for_project_and_repo_that_exist(self):
+        result = self.simulate_get('/results/TEST/jenkinsfile-test')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 3)
+
+    def test_results_for_repo_but_nonexistent_project(self):
+        result = self.simulate_get('/results/FAKENEWS/jenkinsfile-test')
+        self.assertEqual(result.status_code, 404)

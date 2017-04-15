@@ -30,6 +30,19 @@ class PipelineResults(object):
             return True
         return False
 
+    def check_project_exists(self, project):
+        """
+        Check if a given project has results in our database.
+        :param project: project key as string
+        :return: status as boolean
+        """
+        session = self.session_factory()
+        exists = session.query(PipelineRun).filter_by(project=project).first()
+        session.close()
+        if exists:
+            return True
+        return False
+
     def _get_filtered_results(self, **kwargs):
         """
         Filter results search by keyword arguments

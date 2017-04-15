@@ -25,3 +25,4 @@ class DJinnAPI(falcon.API):
         results = ResultsResource(database=self.db)
         self.add_route('/results/', results)
         self.add_route('/results/{project}', results)
+        self.add_route('/results/{project}/{repo}', results)
