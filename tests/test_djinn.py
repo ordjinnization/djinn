@@ -59,6 +59,14 @@ class TestDjinn(testing.TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 3)
 
-    def test_results_for_repo_but_nonexistent_project(self):
+    def test_results_for_repo_with_nonexistent_project(self):
         result = self.simulate_get('/results/FAKENEWS/jenkinsfile-test')
         self.assertEqual(result.status_code, 404)
+
+    def test_results_cors_header(self):
+        result = self.simulate_get('/results/')
+        self.assertEqual(result.headers['Access-Control-Allow-Origin'], '*')
+
+    def test_heatmap_cors_header(self):
+        result = self.simulate_get('/heatmap/')
+        self.assertEqual(result.headers['Access-Control-Allow-Origin'], '*')

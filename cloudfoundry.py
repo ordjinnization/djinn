@@ -28,12 +28,13 @@ def get_jenkins_url_from_env():
     return os.environ.get('JENKINS_URL')
 
 
-def get_pipeline_data(pipelinebranch='develop', frequency=3600):
+def get_pipeline_data(frequency=3600):
     """
     Retrieve pipeline data from Jenkins and persist it.
     :param pipelinebranch: Branch to retrieve data about.
     :param frequency: time in seconds to wait between fetches.
     """
+    pipelinebranch = os.environ.get('DJINN_PIPELINE_BRANCH', 'develop')
     while True:
         djinn.get_all_pipeline_results_and_save_to_db(pipelinebranch=pipelinebranch)
         sleep(frequency)

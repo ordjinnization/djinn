@@ -17,10 +17,19 @@ def format_results(resultlist):
     return output
 
 
+def set_cors_header(req, resp, resource):
+    """
+    CORS function to be used with Falcon.after decorators. Args are provided by Falcon calls.
+    """
+    resp.set_header(name='Access-Control-Allow-Origin', value='*')
+
+
+@falcon.after(set_cors_header)
 class HeatmapResource(object):
     """
     REST resource for heatmap data
     """
+
     def __init__(self, analysis_service):
         self.service = analysis_service
 
@@ -33,10 +42,12 @@ class HeatmapResource(object):
             resp.status = falcon.HTTP_501
 
 
+@falcon.after(set_cors_header)
 class ResultsResource(object):
     """
     REST resource for raw results
     """
+
     def __init__(self, database):
         self.db = database
 

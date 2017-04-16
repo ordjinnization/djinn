@@ -8,4 +8,5 @@ applications:
   - djinn-mysql
 env:
   JENKINS_URL: https://replace:me@jenkinsurl
+  DJINN_PIPELINE_BRANCH: develop
   
