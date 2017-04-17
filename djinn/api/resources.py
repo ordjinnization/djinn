@@ -2,6 +2,8 @@ import json
 
 import falcon
 
+from ..analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby, repos_stage_inner_groupby
+
 
 def format_results(resultlist):
     """
@@ -30,16 +32,20 @@ class HeatmapResource(object):
     REST resource for heatmap data
     """
 
-    def __init__(self, analysis_service):
-        self.service = analysis_service
+    def __init__(self, database):
+        self.db = database
 
     def on_get(self, req, resp, project=None):
         if project is None:
-            resp.body = json.dumps(self.service.get_failures_heatmap_data())
+            failures = self.db.get_all_failures()
+            resp.body = json.dumps(
+                gen_heatmap_with_strategy(projects_stage_inner_groupby, failures))
             resp.status = falcon.HTTP_200
         else:
-            resp.body = json.dumps({'Error': 'Not implemented yet.'})
-            resp.status = falcon.HTTP_501
+            failures = self.db.get_failed_results_for_project(project)
+            resp.body = json.dumps(
+                gen_heatmap_with_strategy(repos_stage_inner_groupby, failures))
+            resp.status = falcon.HTTP_200
 
 
 @falcon.after(set_cors_header)

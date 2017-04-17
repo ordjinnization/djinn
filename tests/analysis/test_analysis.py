@@ -1,39 +1,46 @@
 from unittest import TestCase
 
-from mock import Mock, MagicMock
-
-from djinn.analysis import Analysis, AnalysisService, AnalysisData
-from djinn.database.entity import PipelineRun
+from djinn.analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby, repos_stage_inner_groupby
 
 
 class TestAnalysisService(TestCase):
-    def test_get_failures_heatmap_data(self):
-        # Arrange
-        data = [PipelineRun()]
-        mock_analysis = Mock()
-        mock_pipeline_results = Mock()
-        mock_pipeline_results.get_all_failures = MagicMock(return_value=data)
-        service = AnalysisService(mock_analysis, mock_pipeline_results)
-
-        # Act
-        service.get_failures_heatmap_data()
-
-        # Assert
-        mock_analysis.transform_for_heatmap.assert_called_once()
-
-
-class TestAnalysis(TestCase):
-    def setUp(self):
-        self.analysis = Analysis()
-
-    def test_transform_for_heatmap(self):
-        data = [AnalysisData("run tests", "TestProject", "something"),
-                AnalysisData("run tests", "TestProject", "something"),
-                AnalysisData("re-verify env", "TestProject", "something-else"),
-                AnalysisData("re-verify env", "TestProject", "something-else"),
-                AnalysisData("re-verify env", "AnotherProject", "something-else")]
+    def test_transform_for_projects_heatmap(self):
+        data = [MockPipelineRun("run tests", "TestProject", "something"),
+                MockPipelineRun("run tests", "TestProject", "something"),
+                MockPipelineRun("re-verify env", "TestProject", "something-else"),
+                MockPipelineRun("re-verify env", "TestProject", "something-else"),
+                MockPipelineRun("re-verify env", "AnotherProject", "something-else")]
         expected_heatmap_data = {"z": [[2, 2], [0, 1]],
                                  "y": ["TestProject", "AnotherProject"],
                                  "x": ["run tests", "re-verify env"]}
+        self.assertEquals(gen_heatmap_with_strategy(projects_stage_inner_groupby, data), expected_heatmap_data)
 
-        self.assertEquals(self.analysis.transform_for_heatmap(data), expected_heatmap_data)
+    def test_transform_for_repos_heatmap(self):
+        data = [MockPipelineRun("run tests", "TestProject", "something"),
+                MockPipelineRun("run tests", "TestProject", "something"),
+                MockPipelineRun("re-verify env", "TestProject", "something-else"),
+                MockPipelineRun("re-verify env", "TestProject", "something-else"),
+                MockPipelineRun("re-verify env", "AnotherProject", "something-else")]
+        expected_heatmap_data = {"z": [[2, 0], [0, 3]],
+                                 "y": ["something", "something-else"],
+                                 "x": ["run tests", "re-verify env"]}
+        self.assertEquals(gen_heatmap_with_strategy(repos_stage_inner_groupby, data), expected_heatmap_data)
+
+
+class MockPipelineRun:
+    def __init__(self, stage_failed, project, repository):
+        self._stage_failed = stage_failed
+        self._project = project
+        self._repository = repository
+
+    @property
+    def stage_failed(self):
+        return self._stage_failed
+
+    @property
+    def project(self):
+        return self._project
+
+    @property
+    def repository(self):
+        return self._repository

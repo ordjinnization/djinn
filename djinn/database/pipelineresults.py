@@ -121,6 +121,14 @@ class PipelineResults(object):
         """
         return self._get_filtered_results(repository=reponame)
 
+    def get_failed_results_for_project(self, projectname):
+        """
+        Get all failed results for a given project.
+        :param projectname: project as string
+        :return: list of PipelineRun rows
+        """
+        return self._get_filtered_results(project=projectname, success=False)
+
     def get_failed_results_for_repo(self, reponame):
         """
         Get all failed pipeline runs for a given repository.

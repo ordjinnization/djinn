@@ -8,7 +8,7 @@ class DJinnAPI(falcon.API):
     REST API for retrieving pipeline data
     """
 
-    def __init__(self, djenkins, pipeline_results, analysis_service):
+    def __init__(self, djenkins, pipeline_results):
         """
         Initialize the API with instantiated DJenkins, PipelineResults and AnalysisService objects
         :param djenkins: DJenkins instance
@@ -18,8 +18,7 @@ class DJinnAPI(falcon.API):
         super(self.__class__, self).__init__()
         self.djenkins = djenkins
         self.db = pipeline_results
-        self.analysis = analysis_service
-        heatmap = HeatmapResource(analysis_service=analysis_service)
+        heatmap = HeatmapResource(database=self.db)
         self.add_route('/heatmap/', heatmap)
         self.add_route('/heatmap/{project}', heatmap)
         results = ResultsResource(database=self.db)
