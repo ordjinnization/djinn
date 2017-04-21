@@ -42,7 +42,9 @@ def projects_stage_inner_groupby(stage_data):
     Strategy for transforming raw data into heatmap data mapping projects
     against stages.
     """
-    return groupby(stage_data, lambda item: item.project)
+    staga_data_list = list(stage_data)
+    staga_data_list.sort(key=lambda item: item.project)
+    return groupby(staga_data_list, lambda item: item.project)
 
 
 def repos_stage_inner_groupby(stage_data):
@@ -50,7 +52,9 @@ def repos_stage_inner_groupby(stage_data):
     Strategy for transforming raw data into heatmap data mapping projects
     against stages.
     """
-    return groupby(stage_data, lambda item: item.repo)
+    staga_data_list = list(stage_data)
+    staga_data_list.sort(key=lambda item: item.project)
+    return groupby(staga_data_list, lambda item: item.repo)
 
 
 def _transform_for_heatmap(analysis_strategy):

@@ -1,3 +1,5 @@
+from random import shuffle
+
 from unittest import TestCase
 
 from djinn.analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby, repos_stage_inner_groupby
@@ -6,21 +8,23 @@ from djinn.analysis import gen_heatmap_with_strategy, projects_stage_inner_group
 class TestAnalysisService(TestCase):
     def test_transform_for_projects_heatmap(self):
         data = [MockPipelineRun("run tests", "TestProject", "something"),
-                MockPipelineRun("run tests", "TestProject", "something"),
+                MockPipelineRun("re-verify env", "AnotherProject", "something-else"),
                 MockPipelineRun("re-verify env", "TestProject", "something-else"),
-                MockPipelineRun("re-verify env", "TestProject", "something-else"),
-                MockPipelineRun("re-verify env", "AnotherProject", "something-else")]
-        expected_heatmap_data = {"z": [[2, 2], [0, 1]],
+                MockPipelineRun("re-verify env", "AnotherProject", "something-else"),
+                MockPipelineRun("run tests", "TestProject", "something")]
+        expected_heatmap_data = {"z": [[2, 1], [0, 2]],
                                  "y": ["TestProject", "AnotherProject"],
                                  "x": ["run tests", "re-verify env"]}
+        shuffle(data)
         self.assertEquals(gen_heatmap_with_strategy(projects_stage_inner_groupby, data), expected_heatmap_data)
 
     def test_transform_for_repos_heatmap(self):
         data = [MockPipelineRun("run tests", "TestProject", "something"),
-                MockPipelineRun("run tests", "TestProject", "something"),
                 MockPipelineRun("re-verify env", "TestProject", "something-else"),
+                MockPipelineRun("re-verify env", "AnotherProject", "something-else"),
                 MockPipelineRun("re-verify env", "TestProject", "something-else"),
-                MockPipelineRun("re-verify env", "AnotherProject", "something-else")]
+                MockPipelineRun("run tests", "TestProject", "something")]
+        shuffle(data)
         expected_heatmap_data = {"z": [[2, 0], [0, 3]],
                                  "y": ["something", "something-else"],
                                  "x": ["run tests", "re-verify env"]}
