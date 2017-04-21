@@ -62,6 +62,8 @@ class PipelineResults(object):
         session = self.session_factory()
         if not self._check_row_exists(pk=result.get('id')):
             session.add(PipelineRun(**result))
+        if self._get_filtered_results(id=result.get('id'), status='IN_PROGRESS'):
+            session.query(PipelineRun).filter_by(id=result.get('id')).update(result)
         session.commit()
         session.close()
 
@@ -74,6 +76,8 @@ class PipelineResults(object):
         for result in results:
             if not self._check_row_exists(pk=result.get('id')):
                 session.add(PipelineRun(**result))
+            if self._get_filtered_results(id=result.get('id'), status='IN_PROGRESS'):
+                session.query(PipelineRun).filter_by(id=result.get('id')).update(result)
         session.commit()
         session.close()
 
