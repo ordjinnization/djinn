@@ -1,6 +1,28 @@
+import time
 from unittest import TestCase
 
 from djinn import PipelineResults
+
+
+def generate_mock_result(project='TEST', repository=None, status='SUCCESS', success=True, run_id=1,
+                         timestamp=None):
+    """
+    Create a dict matching the format used for writing to the database.
+    :param project: project name as string
+    :param repository: repository. If None, {project}-repo will be used.
+    :param status: status as string
+    :param success: boolean
+    :param run_id: integer
+    :param timestamp: timestamp in milliseconds since epoch as string. If None, now will be used.
+    :return: result dictionary
+    """
+    if not timestamp:  # If no time provided, use right now.
+        timestamp = str(int(time.time() * 1000))
+    if not repository:
+        repository = '{}-repo'.format(project.lower())
+    result = dict(project=project, repository=repository, status=status, success=success, run_id=run_id,
+                  timestamp=timestamp, id='{}{}'.format(repository, run_id))
+    return result
 
 
 class TestPipelineResults(TestCase):
@@ -9,8 +31,6 @@ class TestPipelineResults(TestCase):
     failedresult = {'status': u'FAILED', 'error_type': u'hudson.AbortException', 'success': False,
                     'repository': 'jenkinsfile-test', 'run_id': u'6', 'timestamp': '1491143013685',
                     'error_message': u'Oops.', 'stage_failed': u'Setup', 'project': 'TEST', 'id': 'jenkinsfile-test6'}
-    inprogressresult = {'status': u'IN_PROGRESS', 'success': False, 'repository': 'jenkinsfile-test', 'run_id': u'8',
-                        'timestamp': '1491143071136', 'project': 'TEST', 'id': 'jenkinsfile-test8'}
 
     def setUp(self):
         self.db = PipelineResults('sqlite://')  # Use in-memory database for testing
@@ -46,28 +66,28 @@ class TestPipelineResults(TestCase):
         """
         Check that a row previously saved as IN_PROGRESS is updated with the latest result.
         """
-        self.db.insert_single_result(result=self.inprogressresult)
-        finished = self.inprogressresult
-        finished.update({'success': True, 'status': u'SUCCESS'})
-        self.db.insert_single_result(result=finished)
-        updated = self.db.get_result_by_primary_key(pk=finished.get('id'))
-        self.assertEqual(updated.success, True)
-        self.assertEqual(updated.status, 'SUCCESS')
+        first = generate_mock_result(status='IN_PROGRESS', success=False)
+        self.db.insert_single_result(first)
+        current = self.db.get_result_by_primary_key(first.get('id'))
+        self.assertEqual(current.status, 'IN_PROGRESS')
+        second = generate_mock_result(status='SUCCESS', success=True)
+        self.db.insert_single_result(second)
+        current = self.db.get_result_by_primary_key(first.get('id'))
+        self.assertEqual(current.status, 'SUCCESS')
 
     def test_insert_batch_result_with_a_single_update(self):
         """
         Check that a row previously saved as IN_PROGRESS is updated with the latest result
         as part of a batch insert.
         """
-        firstbatch = [self.successfulresult, self.failedresult, self.inprogressresult]
-        self.db.insert_result_batch(results=firstbatch)
-        finished = self.inprogressresult
-        finished.update({'success': True, 'status': u'SUCCESS'})
-        secondbatch = [self.successfulresult, self.failedresult, finished]
-        self.db.insert_result_batch(results=secondbatch)
-        updated = self.db.get_result_by_primary_key(pk=finished.get('id'))
-        self.assertEqual(updated.success, True)
-        self.assertEqual(updated.status, 'SUCCESS')
+        incomplete = generate_mock_result(status='IN_PROGRESS', success=False, run_id=1)
+        self.db.insert_result_batch(results=[incomplete, generate_mock_result(run_id=2)])
+        self.assertEqual(2, len(self.db.get_results_for_project('TEST')))
+        self.assertEqual(1, len(self.db.get_failed_results_for_project('TEST')))
+        incomplete.update({'status': 'SUCCESS', 'success': True})
+        self.db.insert_result_batch(results=[incomplete, generate_mock_result(run_id=3)])
+        self.assertEqual(3, len(self.db.get_results_for_project('TEST')))
+        self.assertEqual(0, len(self.db.get_failed_results_for_project('TEST')))
 
     def test_get_all_failures(self):
         """
@@ -93,3 +113,28 @@ class TestPipelineResults(TestCase):
                 self.assertDictContainsSubset(self.failedresult, result.__dict__)
             else:
                 self.fail('Unknown result from repository search: {}'.format(repr(results)))
+
+    def test_get_projects(self):
+        """
+        Check we can retrieve a unique list of projects
+        """
+        for project in ['TEST', 'NEWTEST', 'MYPROJECT']:
+            self.db.insert_single_result(generate_mock_result(project=project))
+        projects = self.db.get_projects()
+        self.assertItemsEqual(['MYPROJECT', 'NEWTEST', 'TEST'], projects)
+
+    def test_get_repos_for_project(self):
+        """
+        Check we can retrieve all repositories for a given project.
+        """
+        batch = list()
+        for project in ['TEST', 'NEWTEST']:
+            for i in xrange(5):
+                batch.append(generate_mock_result(project=project, run_id=i))
+        self.db.insert_result_batch(results=batch)
+        testrepos = self.db.get_repos_for_project(project='TEST')
+        self.assertListEqual(['test-repo'], testrepos)
+        newtestrepos = self.db.get_repos_for_project(project='NEWTEST')
+        self.assertListEqual(['newtest-repo'], newtestrepos)
+        norepos = self.db.get_repos_for_project(project='FAKE_NEWS')
+        self.assertListEqual([], norepos)

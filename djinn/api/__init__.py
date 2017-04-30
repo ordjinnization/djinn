@@ -1,6 +1,6 @@
 import falcon
 
-from .resources import HeatmapResource, ResultsResource
+from .resources import HeatmapResource, ResultsResource, ProjectResource
 
 
 class DJinnAPI(falcon.API):
@@ -25,3 +25,6 @@ class DJinnAPI(falcon.API):
         self.add_route('/results/', results)
         self.add_route('/results/{project}', results)
         self.add_route('/results/{project}/{repo}', results)
+        projects = ProjectResource(database=self.db)
+        self.add_route('/projects/', projects)
+        self.add_route('/projects/{project}', projects)

@@ -156,3 +156,27 @@ class PipelineResults(object):
         :return: list of PipelineRun rows
         """
         return self._get_filtered_results(error_type=error)
+
+    def get_projects(self):
+        """
+        Return list of project names available.
+        :return: List of strings
+        """
+        session = self.session_factory()
+        results = [row.project for row in session.query(PipelineRun.project.distinct().label('project')).all()]
+        session.commit()
+        session.close()
+        return results
+
+    def get_repos_for_project(self, project):
+        """
+        Return list of repositories in a given project
+        :param project: project name as string
+        :return: list of strings
+        """
+        session = self.session_factory()
+        results = [row.repo for row in
+                   session.query(PipelineRun.repository.distinct().label('repo')).filter_by(project=project).all()]
+        session.commit()
+        session.close()
+        return results

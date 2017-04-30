@@ -39,12 +39,12 @@ class HeatmapResource(object):
         if project is None:
             failures = self.db.get_all_failures()
             resp.body = json.dumps(
-                gen_heatmap_with_strategy(projects_stage_inner_groupby, failures))
+                    gen_heatmap_with_strategy(projects_stage_inner_groupby, failures))
             resp.status = falcon.HTTP_200
         else:
             failures = self.db.get_failed_results_for_project(project)
             resp.body = json.dumps(
-                gen_heatmap_with_strategy(repos_stage_inner_groupby, failures))
+                    gen_heatmap_with_strategy(repos_stage_inner_groupby, failures))
             resp.status = falcon.HTTP_200
 
 
@@ -71,4 +71,30 @@ class ResultsResource(object):
         else:
             results = self.db.get_all_results()
         resp.body = json.dumps({'results': format_results(results)})
+        resp.status = falcon.HTTP_200
+
+
+@falcon.after(set_cors_header)
+class ProjectResource(object):
+    """
+    REST resource for available projects, or a list of repositories for a given project
+    """
+
+    def __init__(self, database):
+        self.db = database
+
+    def on_get(self, req, resp, project=None):
+        if project:
+            if not self.db.check_project_exists(project):
+                resp.body = json.dumps({'Error': 'Project key {} not found!'.format(project)})
+                resp.status = falcon.HTTP_404
+                return
+
+        if project:
+            repos = self.db.get_repos_for_project(project)
+            body = {'repositories': repos}
+        else:
+            projects = self.db.get_projects()
+            body = {'projects': projects}
+        resp.body = json.dumps(body)
         resp.status = falcon.HTTP_200

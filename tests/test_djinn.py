@@ -1,4 +1,5 @@
 import os
+
 from falcon import testing
 
 from djinn import Djinn
@@ -68,3 +69,13 @@ class TestDjinn(testing.TestCase):
     def test_heatmap_cors_header(self):
         result = self.simulate_get('/heatmap/')
         self.assertEqual(result.headers['Access-Control-Allow-Origin'], '*')
+
+    def test_project_list(self):
+        result = self.simulate_get('/projects/')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json, {'projects': ['TEST']})
+
+    def test_project_returns_list_of_repos(self):
+        result = self.simulate_get('/projects/TEST/')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json, {'repositories': ['jenkinsfile-test']})
