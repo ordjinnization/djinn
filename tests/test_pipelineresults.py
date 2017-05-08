@@ -142,8 +142,9 @@ class TestPipelineResults(TestCase):
     def test_get_latest_results(self):
         """
         Check we can retrieve the highest run ID for all repositories.
+        Use a range that includes 99, 100 to verify we're not getting the max string value('99' > '100')
         """
-        for x in xrange(5):
+        for x in xrange(98, 103):
             self.db.insert_single_result(generate_mock_result(repository='test-repo', run_id=x))
             self.db.insert_single_result(generate_mock_result(repository='newtest-repo', run_id=x + 1))
         results = self.db.get_all_results()
@@ -152,18 +153,19 @@ class TestPipelineResults(TestCase):
         self.assertEqual(len(latest), 2)
         for result in latest:
             if result.repository == 'test-repo':
-                self.assertEqual(result.run_id, '4')
+                self.assertEqual(result.run_id, '102')
             elif result.repository == 'newtest-repo':
-                self.assertEqual(result.run_id, '5')
+                self.assertEqual(result.run_id, '103')
 
     def test_get_latest_results_for_repo(self):
         """
         Check we can retrieve the highest run ID for each repository in a project.
+        Use a range that includes 99, 100 to verify we're not getting the max string value('99' > '100')
         """
-        for x in xrange(5):
+        for x in xrange(98, 103):
             self.db.insert_single_result(generate_mock_result(project='TEST', repository='test-repo', run_id=x))
             self.db.insert_single_result(generate_mock_result(project='NEWTEST', repository='newtest-repo', run_id=x))
         testlatest = self.db.get_latest_results_for_project('TEST')
         self.assertEqual(len(testlatest), 1)
         self.assertEqual(testlatest[0].repository, 'test-repo')
-        self.assertEqual(testlatest[0].run_id, '4')
+        self.assertEqual(testlatest[0].run_id, '102')

@@ -7,16 +7,16 @@ from djinn import Djinn
 
 class TestDjinn(testing.TestCase):
     basefolder = os.path.dirname(os.path.realpath(__file__))
-    mock_results = [{'status': u'FAILED', 'error_type': u'hudson.AbortException', 'success': False,
+    mock_results = [{'status': u'SUCCESS', 'success': True, 'repository': 'jenkinsfile-test', 'run_id': u'7',
+                     'timestamp': '1491143071036', 'project': 'TEST', 'id': 'jenkinsfile-test7'},
+                    {'status': u'FAILED', 'error_type': u'hudson.AbortException', 'success': False,
                      'repository': 'jenkinsfile-test', 'run_id': u'6', 'timestamp': '1491143013685',
                      'error_message': u'Oops.', 'stage_failed': u'Setup', 'project': 'TEST',
                      'id': 'jenkinsfile-test6'},
                     {'status': u'FAILED', 'error_type': u'hudson.AbortException', 'success': False,
                      'repository': 'jenkinsfile-test', 'run_id': u'5', 'timestamp': '1491143013620',
                      'error_message': u'Oops.', 'stage_failed': u'Deploy', 'project': 'TEST',
-                     'id': 'jenkinsfile-test5'},
-                    {'status': u'SUCCESS', 'success': True, 'repository': 'jenkinsfile-test', 'run_id': u'7',
-                     'timestamp': '1491143071036', 'project': 'TEST', 'id': 'jenkinsfile-test7'}]
+                     'id': 'jenkinsfile-test5'}]
 
     @classmethod
     def setUpClass(cls):
