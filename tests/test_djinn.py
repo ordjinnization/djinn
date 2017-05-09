@@ -79,3 +79,25 @@ class TestDjinn(testing.TestCase):
         result = self.simulate_get('/projects/TEST/')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json, {'repositories': ['jenkinsfile-test']})
+
+    def test_results_with_latest_as_true(self):
+        result = self.simulate_get('/results/', query_string='latest=true')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 1)
+        self.assertEqual(result.json['results']['TEST']['jenkinsfile-test'][0]['run_id'], '7')
+
+    def test_results_with_latest_as_false(self):
+        result = self.simulate_get('/results/', query_string='latest=false')
+        self.assertEqual(result.status_code, 200)
+        self.assertNotEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 1)
+
+    def test_results_for_project_that_exists_with_latest_as_true(self):
+        result = self.simulate_get('/results/TEST', query_string='latest=true')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 1)
+        self.assertEqual(result.json['results']['TEST']['jenkinsfile-test'][0]['run_id'], '7')
+
+    def test_results_for_project_that_exists_with_latest_as_false(self):
+        result = self.simulate_get('/results/TEST', query_string='latest=false')
+        self.assertEqual(result.status_code, 200)
+        self.assertNotEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 1)

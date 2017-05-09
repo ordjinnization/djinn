@@ -64,12 +64,20 @@ class ResultsResource(object):
                 resp.status = falcon.HTTP_404
                 return
 
+        latest = req.get_param_as_bool(name='latest', required=False)
+
         if project and repo:
             results = self.db.get_results_for_repo(reponame=repo)
         elif project:
-            results = self.db.get_results_for_project(project=project)
+            if latest:
+                results = self.db.get_latest_results_for_project(project=project)
+            else:
+                results = self.db.get_results_for_project(project=project)
         else:
-            results = self.db.get_all_results()
+            if latest:
+                results = self.db.get_latest_results()
+            else:
+                results = self.db.get_all_results()
         resp.body = json.dumps({'results': format_results(results)})
         resp.status = falcon.HTTP_200
 

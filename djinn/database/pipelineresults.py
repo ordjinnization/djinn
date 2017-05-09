@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy import func, cast, Integer, String
 from sqlalchemy.orm import sessionmaker
 
 from .entity import PipelineRun
@@ -178,5 +179,36 @@ class PipelineResults(object):
         results = [row.repo for row in
                    session.query(PipelineRun.repository.distinct().label('repo')).filter_by(project=project).all()]
         session.commit()
+        session.close()
+        return results
+
+    def get_latest_results(self):
+        """
+        Return results for highest run ID for each repository
+        :return: list of PipelineRun rows
+        """
+        session = self.session_factory()
+        subq = session.query(
+                PipelineRun.repository, func.max(cast(PipelineRun.run_id, Integer)).label('max_run_id')).group_by(
+                PipelineRun.repository).subquery('subq')
+        results = session.query(PipelineRun).filter(
+                PipelineRun.repository == subq.c.repository,
+                PipelineRun.run_id == cast(subq.c.max_run_id, String)).all()
+        session.close()
+        return results
+
+    def get_latest_results_for_project(self, project):
+        """
+        Return results for the highest run ID for each repository in a given project.
+        :param project: project name as string
+        :return: list of PipelineRun rows
+        """
+        session = self.session_factory()
+        subq = session.query(
+                PipelineRun.repository, func.max(cast(PipelineRun.run_id, Integer)).label('max_run_id')).group_by(
+                PipelineRun.repository).filter_by(project=project).subquery('subq')
+        results = session.query(PipelineRun).filter(
+                PipelineRun.repository == subq.c.repository,
+                PipelineRun.run_id == cast(subq.c.max_run_id, String)).all()
         session.close()
         return results
