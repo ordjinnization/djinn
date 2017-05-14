@@ -8,7 +8,7 @@ from ..djinnutils import get_epoch_time_of_weeks_ago
 
 def format_results(resultlist):
     """
-    Take a list of SQLAlchemy DB objects and arrange them into a dict of {project: {repository: [stages] } }
+    Take a list of SQLAlchemy DB objects and arrange them into a flat list.
     :param resultlist: list of stage results
     :return: formatted dict of results
     """
