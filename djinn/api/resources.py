@@ -3,6 +3,7 @@ import json
 import falcon
 
 from ..analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby, repos_stage_inner_groupby
+from ..djinnutils import get_epoch_time_of_weeks_ago
 
 
 def format_results(resultlist):
@@ -11,11 +12,11 @@ def format_results(resultlist):
     :param resultlist: list of stage results
     :return: formatted dict of results
     """
-    output = dict()
+    output = list()
     for item in resultlist:
         item = item.__dict__
         item.pop('_sa_instance_state')
-        output.setdefault(item.get('project'), {}).setdefault(item.get('repository'), []).append(item)
+        output.append(item)
     return output
 
 
@@ -65,19 +66,21 @@ class ResultsResource(object):
                 return
 
         latest = req.get_param_as_bool(name='latest', required=False)
+        weeks_ago = req.get_param_as_int(name='weeks_ago', required=False)
+        target_timestamp = get_epoch_time_of_weeks_ago(weeks=weeks_ago)
 
         if project and repo:
-            results = self.db.get_results_for_repo(reponame=repo)
+            results = self.db.get_results_for_repo(reponame=repo, timestamp=target_timestamp)
         elif project:
             if latest:
                 results = self.db.get_latest_results_for_project(project=project)
             else:
-                results = self.db.get_results_for_project(project=project)
+                results = self.db.get_results_for_project(project=project, timestamp=target_timestamp)
         else:
             if latest:
                 results = self.db.get_latest_results()
             else:
-                results = self.db.get_all_results()
+                results = self.db.get_all_results(timestamp=target_timestamp)
         resp.body = json.dumps({'results': format_results(results)})
         resp.status = falcon.HTTP_200
 

@@ -7,7 +7,7 @@ from djinn import Djinn
 
 def get_pcf_mysql_connection_string():
     """
-    Pivotal Cloud Foundry's connection string doesn't _quite_ work for us, need to change the 
+    Pivotal Cloud Foundry's connection string doesn't _quite_ work for us, need to change the
     dialect to mysqlclient and drop the reconnect arg.
     :return: formatted mysql database URL as string
     """
@@ -31,7 +31,6 @@ def get_jenkins_url_from_env():
 def get_pipeline_data(frequency=3600):
     """
     Retrieve pipeline data from Jenkins and persist it.
-    :param pipelinebranch: Branch to retrieve data about.
     :param frequency: time in seconds to wait between fetches.
     """
     pipelinebranch = os.environ.get('DJINN_PIPELINE_BRANCH', 'develop')

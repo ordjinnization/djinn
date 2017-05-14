@@ -1,4 +1,5 @@
 import os
+import time
 
 from falcon import testing
 
@@ -8,7 +9,7 @@ from djinn import Djinn
 class TestDjinn(testing.TestCase):
     basefolder = os.path.dirname(os.path.realpath(__file__))
     mock_results = [{'status': u'SUCCESS', 'success': True, 'repository': 'jenkinsfile-test', 'run_id': u'7',
-                     'timestamp': '1491143071036', 'project': 'TEST', 'id': 'jenkinsfile-test7'},
+                     'timestamp': str(int(time.time() * 1000.0)), 'project': 'TEST', 'id': 'jenkinsfile-test7'},
                     {'status': u'FAILED', 'error_type': u'hudson.AbortException', 'success': False,
                      'repository': 'jenkinsfile-test', 'run_id': u'6', 'timestamp': '1491143013685',
                      'error_message': u'Oops.', 'stage_failed': u'Setup', 'project': 'TEST',
@@ -42,12 +43,12 @@ class TestDjinn(testing.TestCase):
     def test_results(self):
         result = self.simulate_get('/results/')
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 3)
+        self.assertEqual(len(result.json['results']), 3)
 
     def test_results_for_project_that_exists(self):
         result = self.simulate_get('/results/TEST')
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 3)
+        self.assertEqual(len(result.json['results']), 3)
 
     def test_results_for_project_that_does_not_exist(self):
         result = self.simulate_get('/results/FAKENEWS')
@@ -56,7 +57,7 @@ class TestDjinn(testing.TestCase):
     def test_results_for_project_and_repo_that_exist(self):
         result = self.simulate_get('/results/TEST/jenkinsfile-test')
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 3)
+        self.assertEqual(len(result.json['results']), 3)
 
     def test_results_for_repo_with_nonexistent_project(self):
         result = self.simulate_get('/results/FAKENEWS/jenkinsfile-test')
@@ -83,21 +84,45 @@ class TestDjinn(testing.TestCase):
     def test_results_with_latest_as_true(self):
         result = self.simulate_get('/results/', query_string='latest=true')
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 1)
-        self.assertEqual(result.json['results']['TEST']['jenkinsfile-test'][0]['run_id'], '7')
+        self.assertEqual(len(result.json['results']), 1)
+        self.assertEqual(result.json['results'][0]['run_id'], '7')
 
     def test_results_with_latest_as_false(self):
         result = self.simulate_get('/results/', query_string='latest=false')
         self.assertEqual(result.status_code, 200)
-        self.assertNotEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 1)
+        self.assertNotEqual(len(result.json['results']), 1)
 
     def test_results_for_project_that_exists_with_latest_as_true(self):
         result = self.simulate_get('/results/TEST', query_string='latest=true')
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 1)
-        self.assertEqual(result.json['results']['TEST']['jenkinsfile-test'][0]['run_id'], '7')
+        self.assertEqual(len(result.json['results']), 1)
+        self.assertEqual(result.json['results'][0]['run_id'], '7')
 
     def test_results_for_project_that_exists_with_latest_as_false(self):
         result = self.simulate_get('/results/TEST', query_string='latest=false')
         self.assertEqual(result.status_code, 200)
-        self.assertNotEqual(len(result.json['results']['TEST']['jenkinsfile-test']), 1)
+        self.assertNotEqual(len(result.json['results']), 1)
+
+    def test_results_with_weeks_ago(self):
+        """
+        One of our mock results has a current timestamp, so filter by one week to exclude it.
+        """
+        result = self.simulate_get('/results/', query_string='weeks_ago=1')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(result.json['results']), 2)
+
+    def test_results_for_project_with_weeks_ago(self):
+        """
+        One of our mock results has a current timestamp, so filter by one week to exclude it.
+        """
+        result = self.simulate_get('/results/TEST', query_string='weeks_ago=1')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(result.json['results']), 2)
+
+    def test_results_for_repo_with_weeks_ago(self):
+        """
+        One of our mock results has a current timestamp, so filter by one week to exclude it.
+        """
+        result = self.simulate_get('/results/TEST/jenkinsfile-test', query_string='weeks_ago=1')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(result.json['results']), 2)

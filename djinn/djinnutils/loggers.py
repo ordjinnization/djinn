@@ -6,6 +6,7 @@ def get_named_logger(name, debug=False):
     """
     Create a logger, if no handlers already exist attach to stdout
     :param name: desired name of logger as string
+    :param debug: log DEBUG events if True
     :return: Logger instance
     """
     logger = logging.getLogger(name)

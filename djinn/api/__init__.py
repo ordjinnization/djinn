@@ -13,7 +13,6 @@ class DJinnAPI(falcon.API):
         Initialize the API with instantiated DJenkins, PipelineResults and AnalysisService objects
         :param djenkins: DJenkins instance
         :param pipeline_results: PipelineResults instance
-        :param analysis_service: AnalysisService instance
         """
         super(self.__class__, self).__init__()
         self.djenkins = djenkins

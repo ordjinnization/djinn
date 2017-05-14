@@ -93,13 +93,17 @@ class PipelineResults(object):
         session.close()
         return result
 
-    def get_all_results(self):
+    def get_all_results(self, timestamp=None):
         """
-        Get all results.
+        Get all results, optionally before a certain epoch time.
+        :param timestamp: epoch millseconds as string, or None
         :return: list of PipelineRun rows
         """
         session = self.session_factory()
-        results = list(session.query(PipelineRun).all())
+        query = session.query(PipelineRun)
+        if timestamp:
+            query = query.filter(PipelineRun.timestamp <= timestamp)
+        results = query.all()
         session.close()
         return results
 
@@ -110,21 +114,35 @@ class PipelineResults(object):
         """
         return self._get_filtered_results(success=False)
 
-    def get_results_for_project(self, project):
+    def get_results_for_project(self, project, timestamp=None):
         """
-        Get all results for a given project.
+        Get all results for a given project, optionally before a certain epoch time.
         :param project: project name as string
+        :param timestamp: epoch milliseconds as string, or None
         :return: list of PipelineRun rows
         """
-        return self._get_filtered_results(project=project)
+        session = self.session_factory()
+        query = session.query(PipelineRun).filter(PipelineRun.project == project)
+        if timestamp:
+            query = query.filter(PipelineRun.timestamp <= timestamp)
+        results = query.all()
+        session.close()
+        return results
 
-    def get_results_for_repo(self, reponame):
+    def get_results_for_repo(self, reponame, timestamp=None):
         """
-        Get all results for a given repository.
+        Get all results for a given repository, optionally before a certain epoch time.
         :param reponame: repository as string
+        :param timestamp: epoch milliseconds as string, or None
         :return: list of PipelineRun rows
         """
-        return self._get_filtered_results(repository=reponame)
+        session = self.session_factory()
+        query = session.query(PipelineRun).filter(PipelineRun.repository == reponame)
+        if timestamp:
+            query = query.filter(PipelineRun.timestamp <= timestamp)
+        results = query.all()
+        session.close()
+        return results
 
     def get_failed_results_for_project(self, projectname):
         """
@@ -165,7 +183,6 @@ class PipelineResults(object):
         """
         session = self.session_factory()
         results = [row.project for row in session.query(PipelineRun.project.distinct().label('project')).all()]
-        session.commit()
         session.close()
         return results
 
@@ -178,7 +195,6 @@ class PipelineResults(object):
         session = self.session_factory()
         results = [row.repo for row in
                    session.query(PipelineRun.repository.distinct().label('repo')).filter_by(project=project).all()]
-        session.commit()
         session.close()
         return results
 

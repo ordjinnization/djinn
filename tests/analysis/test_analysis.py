@@ -1,19 +1,18 @@
+from unittest import TestCase
 from uuid import uuid4
 
 from hypothesis import given, settings
 from hypothesis.strategies import lists, integers, text, characters
 
-from unittest import TestCase
-
 from djinn.analysis import gen_heatmap_with_strategy, projects_stage_inner_groupby
 
 """ Generate random upper case letter strings. """
 strings = text(characters(min_codepoint=66, max_codepoint=90)).map(lambda s: s.strip()).filter(
-    lambda s: len(s) > 0)
+        lambda s: len(s) > 0)
 
 """ Generate a list of lists of equal sizes. """
 rectangle_lists = integers(min_value=2, max_value=50).flatmap(
-    lambda n: lists(lists(integers(min_value=2, max_value=30), min_size=n, max_size=n)))
+        lambda n: lists(lists(integers(min_value=2, max_value=30), min_size=n, max_size=n)))
 
 
 def gen_data_from_z(z):
@@ -21,7 +20,7 @@ def gen_data_from_z(z):
     Given the z axis values (2d list of failures) generate data that would have
     given us this z value.
     :param z: a list of lists of failures.
-    :return: the data that would have given this z value, the z value, the x value 
+    :return: the data that would have given this z value, the z value, the x value
         (stages) and the y value (projects).
     """
     data = []
@@ -40,7 +39,7 @@ def gen_data_from_z(z):
 
 def build_failure_map(stages, projects, z):
     """
-    Build a dict mapping the key "projects + stages" to the number 
+    Build a dict mapping the key "projects + stages" to the number
     of failures.
     :param stages: list of stages.
     :param projects: list of projects.
@@ -63,9 +62,9 @@ class TestAnalysisService(TestCase):
     def test_transform_grouping_by_projects(self, given_z):
         """
         Given a known value for z, generate the data that would give this z,
-        transform the data and check that the z value from the transformed data 
+        transform the data and check that the z value from the transformed data
         matches the given z value.
-        :param given_z: the generated z value.       
+        :param given_z: the generated z value.
         """
         data, expected_z, expected_stages, expected_projects = gen_data_from_z(given_z)
         actual = gen_heatmap_with_strategy(projects_stage_inner_groupby, data)
@@ -74,7 +73,6 @@ class TestAnalysisService(TestCase):
         projects = actual['y']
         actual_failures = build_failure_map(stages, projects, actual['z'])
         self.assertEqual(expected_failures, actual_failures)
-
 
 
 class MockPipelineRun:
